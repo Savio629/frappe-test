@@ -1,20 +1,15 @@
 import requests
 from fastapi import APIRouter, HTTPException
-
 from supabase import Client
 from .database import get_supabase_client
 
 router = APIRouter()
 supabase: Client = get_supabase_client()
 
-# In-memory storage
-books = []
-
 FRAPPE_API_URL = "https://frappe.io/api/method/frappe-library"
 
 @router.post("/")
 def import_books(page: int = 1, title: str = None, authors: str = None):
-   
     params = {"page": page}
     if title:
         params["title"] = title
@@ -32,29 +27,31 @@ def import_books(page: int = 1, title: str = None, authors: str = None):
         return {"message": "No books found for the given parameters."}
 
     added_books = []
+    updated_books = []
     for book in books_data:
-        existing_book = supabase.table("books").select("*").eq("id", book["bookID"]).execute()
-        if not existing_book.data:
+        book_id = book["bookID"]
+        book_title = book["title"]
+        book_author = book["authors"]
+        book_stock = book.get("bookStock", 1)
+
+        existing_book = supabase.table("books").select("*").eq("id", book_id).execute()
+
+        if existing_book.data:
+            current_stock = existing_book.data[0]["stock"]
+            new_stock = current_stock + book_stock
+            supabase.table("books").update({"stock": new_stock}).eq("id", book_id).execute()
+            updated_books.append(book_title)
+        else:
             supabase.table("books").insert({
-                "id": book["bookID"],
-                "name": book["title"],
-                "author": book["authors"],
-                "stock": book.get("bookStock", 0)
+                "id": book_id,
+                "name": book_title,
+                "author": book_author,
+                "stock": book_stock
             }).execute()
-            added_books.append(book["title"])
+            added_books.append(book_title)
 
-    return {"message": f"Books {', '.join(added_books)} imported successfully."}
-
-        # if not any(b['id'] == book["bookID"] for b in books):
-        #     new_book = {
-        #         "id": book["bookID"],
-        #         "name": book["title"],
-        #         "author": book["authors"],
-        #         "stock": 10  # Default stock value
-        #     }
-        #     books.append(new_book)
-        #     added_books.append(new_book)
-
-    # return {"message": f"{len(added_books)} books imported successfully.", "books": [b["name"] for b in added_books]}
-
-
+    return {
+        "message": f"{len(added_books)} books added, {len(updated_books)} books updated.",
+        "added_books": added_books,
+        "updated_books": updated_books,
+    }

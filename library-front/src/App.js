@@ -6,8 +6,7 @@ import IssueBookForm from "./components/IssueBookForm";
 import ReturnBookForm from "./components/ReturnBookForm";
 import TransactionTable from "./components/TransactionTable";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
-
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const App = () => {
   const [tab, setTab] = useState(0);
   const [message, setMessage] = useState("");
@@ -22,7 +21,7 @@ const App = () => {
       <Typography variant="h4" align="center" gutterBottom sx={{ paddingTop: 4 }}>
         Library Management Console
       </Typography>
-      <Tabs value={tab} onChange={handleTabChange} centered>
+      <Tabs value={tab} onChange={handleTabChange} centered sx={{ marginBottom: 2 }}>
         <Tab label="Books" />
         <Tab label="Members" />
         <Tab label="Transactions" />

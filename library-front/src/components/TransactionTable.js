@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const TransactionTable = ({ setMessage }) => {
   const [loading, setLoading] = useState(false);
