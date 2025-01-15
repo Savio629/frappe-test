@@ -1,6 +1,12 @@
 # Library Management System
 
-This repository contains the frontend and backend code for a Library Management System. The backend is built using FastAPI, and the frontend is developed using React.
+This repository contains the frontend and backend code for a Library Management System for Dev Hiring Test. The backend is built using FastAPI, and the frontend is developed using React.
+
+### 🌐 Live Links
+
+**Frontend: https://frappe-test.netlify.app/**
+
+**Backend: https://frappe-test.onrender.com/**
 
 ## Table of Contents
 
